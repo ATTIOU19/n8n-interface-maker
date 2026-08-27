@@ -188,7 +188,7 @@ function Index() {
     "text-[11px] font-semibold uppercase tracking-wider text-muted-foreground font-mono";
 
   return (
-    <div className="min-h-screen bg-background pb-10 font-sans text-foreground antialiased">
+    <div className="bg-grid min-h-screen bg-background pb-10 font-sans text-foreground antialiased">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-3">
           <div className="flex items-center gap-4">
@@ -209,7 +209,7 @@ function Index() {
               </svg>
             </div>
             <div>
-              <h1 className="text-sm font-semibold tracking-tight">Poste d'Aiguillage Alpha</h1>
+              <h1 className="font-heading text-sm font-semibold tracking-tight">Poste d'Aiguillage Alpha</h1>
               <p className="font-mono text-xs text-muted-foreground">v2.4.0-stable</p>
             </div>
           </div>
@@ -274,7 +274,7 @@ function Index() {
       <main className="mx-auto grid max-w-7xl grid-cols-12 gap-0 border-x border-border bg-card">
         <section className="col-span-12 border-b border-border p-8 lg:col-span-5 lg:border-b-0 lg:border-r">
           <div className="mb-8">
-            <h2 className="text-xl font-semibold tracking-tight text-balance">
+            <h2 className="font-heading text-xl font-semibold tracking-tight text-balance">
               Bordereau d'expédition
             </h2>
             <p className="mt-2 max-w-[48ch] text-sm text-pretty text-muted-foreground">
@@ -359,7 +359,7 @@ function Index() {
               <button
                 type="submit"
                 disabled={envoi}
-                className="flex w-full items-center justify-center rounded-md bg-primary py-2.5 pr-3 pl-2 text-sm font-medium text-primary-foreground ring-ring ring-offset-2 transition-transform focus:ring-2 active:scale-[0.98] disabled:opacity-60"
+                className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-primary to-primary-glow py-2.5 pr-3 pl-2 text-sm font-semibold text-primary-foreground glow-primary ring-2 ring-ring/50 ring-offset-2 ring-offset-background transition-all hover:brightness-110 hover:glow-primary-strong focus:ring-2 active:scale-[0.98] disabled:opacity-60 disabled:shadow-none"
               >
                 <svg
                   className="mr-2 size-4 shrink-0"
@@ -375,7 +375,7 @@ function Index() {
                     d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
                   />
                 </svg>
-                {envoi ? "Aiguillage en cours…" : "Envoyer au workflow"}
+                {envoi ? "Envoi en cours…" : "Envoyer"}
               </button>
             </div>
           </form>
