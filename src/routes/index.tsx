@@ -188,7 +188,7 @@ function Index() {
     "text-[11px] font-semibold uppercase tracking-wider text-muted-foreground font-mono";
 
   return (
-    <div className="min-h-screen bg-background pb-10 font-sans text-foreground antialiased">
+    <div className="bg-grid min-h-screen bg-background pb-10 font-sans text-foreground antialiased">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-3">
           <div className="flex items-center gap-4">
