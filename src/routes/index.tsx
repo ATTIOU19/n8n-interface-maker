@@ -35,7 +35,8 @@ type LogEntry = {
   detailKind: "console" | "error" | "none";
 };
 
-const STORAGE_KEY = "aiguillage.webhook.url";
+const DEFAULT_WEBHOOK_URL = "https://ali19.app.n8n.cloud/webhook/lovable-form";
+const STORAGE_KEY = "aiguillage.webhook.n8n.url";
 
 function horodatage(d: Date) {
   const p = (n: number, l = 2) => String(n).padStart(l, "0");
@@ -45,7 +46,7 @@ function horodatage(d: Date) {
 }
 
 function Index() {
-  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState(DEFAULT_WEBHOOK_URL);
   const [editUrl, setEditUrl] = useState(false);
   const [connState, setConnState] = useState<"idle" | "testing" | "ok" | "ko">("idle");
   const [latency, setLatency] = useState<number | null>(null);
@@ -61,7 +62,7 @@ function Index() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) ?? "";
+    const saved = localStorage.getItem(STORAGE_KEY) ?? DEFAULT_WEBHOOK_URL;
     setWebhookUrl(saved);
     if (!saved) setEditUrl(true);
   }, []);
