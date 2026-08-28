@@ -62,7 +62,7 @@ function Index() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) ?? "";
+    const saved = localStorage.getItem(STORAGE_KEY) ?? DEFAULT_WEBHOOK_URL;
     setWebhookUrl(saved);
     if (!saved) setEditUrl(true);
   }, []);
