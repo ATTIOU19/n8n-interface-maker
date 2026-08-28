@@ -36,7 +36,7 @@ type LogEntry = {
 };
 
 const DEFAULT_WEBHOOK_URL = "https://ali19.app.n8n.cloud/webhook/lovable-form";
-const STORAGE_KEY = "aiguillage.webhook.url";
+const STORAGE_KEY = "aiguillage.webhook.n8n.url";
 
 function horodatage(d: Date) {
   const p = (n: number, l = 2) => String(n).padStart(l, "0");
