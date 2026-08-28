@@ -46,7 +46,7 @@ function horodatage(d: Date) {
 }
 
 function Index() {
-  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState(DEFAULT_WEBHOOK_URL);
   const [editUrl, setEditUrl] = useState(false);
   const [connState, setConnState] = useState<"idle" | "testing" | "ok" | "ko">("idle");
   const [latency, setLatency] = useState<number | null>(null);
