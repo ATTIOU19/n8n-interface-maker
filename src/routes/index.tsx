@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
+
+import { askClaude, type ClaudeResult } from "@/lib/claude.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,6 +49,8 @@ function horodatage(d: Date) {
 }
 
 function Index() {
+  const ask = useServerFn(askClaude);
+
   const [webhookUrl, setWebhookUrl] = useState(DEFAULT_WEBHOOK_URL);
   const [editUrl, setEditUrl] = useState(false);
   const [connState, setConnState] = useState<"idle" | "testing" | "ok" | "ko">("idle");
@@ -60,6 +65,10 @@ function Index() {
   const [counter, setCounter] = useState(9480);
 
   const [logs, setLogs] = useState<LogEntry[]>([]);
+
+  const [questionClaude, setQuestionClaude] = useState("");
+  const [claudeLoading, setClaudeLoading] = useState(false);
+  const [claudeResult, setClaudeResult] = useState<ClaudeResult | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) ?? DEFAULT_WEBHOOK_URL;
@@ -183,13 +192,31 @@ function Index() {
     }
   }
 
+  async function poserQuestionClaude(e: React.FormEvent) {
+    e.preventDefault();
+    if (!questionClaude.trim() || claudeLoading) return;
+    setClaudeLoading(true);
+    setClaudeResult(null);
+    try {
+      setClaudeResult(await ask({ data: { prompt: questionClaude.trim() } }));
+    } catch (err) {
+      setClaudeResult({
+        ok: false,
+        code: "CLIENT_ERROR",
+        error: err instanceof Error ? err.message : "Erreur inattendue.",
+      });
+    } finally {
+      setClaudeLoading(false);
+    }
+  }
+
   const inputCls =
     "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring";
   const labelCls =
     "text-[11px] font-semibold uppercase tracking-wider text-muted-foreground font-mono";
 
   return (
-    <div className="bg-grid min-h-screen bg-background pb-10 font-sans text-foreground antialiased">
+    <div className="bg-grid min-h-screen bg-background pb-24 font-sans text-foreground antialiased">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-3">
           <div className="flex items-center gap-4">
@@ -446,6 +473,85 @@ function Index() {
           </div>
         </section>
       </main>
+
+      <section className="mx-auto mt-6 max-w-7xl border border-border bg-card">
+        <div className="border-b border-border bg-background/50 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-accent text-accent-foreground">
+              <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="font-heading text-sm font-semibold tracking-tight">Assistant Claude</h2>
+              <p className="text-xs text-muted-foreground">Posez une question — la réponse s'affiche ci-dessous.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-0 lg:grid-cols-2">
+          <div className="border-b border-border p-6 lg:border-b-0 lg:border-r">
+            <form onSubmit={poserQuestionClaude} className="space-y-4">
+              <div className="space-y-2">
+                <label className={labelCls} htmlFor="question-claude">Votre question</label>
+                <textarea
+                  id="question-claude"
+                  rows={5}
+                  value={questionClaude}
+                  onChange={(e) => setQuestionClaude(e.target.value)}
+                  placeholder="Exemple : Résume ce message en deux phrases..."
+                  className={inputCls}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={claudeLoading || !questionClaude.trim()}
+                className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-primary to-primary-glow py-2.5 pr-3 pl-2 text-sm font-semibold text-primary-foreground glow-primary ring-2 ring-ring/50 ring-offset-2 ring-offset-background transition-all hover:brightness-110 hover:glow-primary-strong focus:ring-2 active:scale-[0.98] disabled:opacity-60 disabled:shadow-none"
+              >
+                <svg className="mr-2 size-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                </svg>
+                {claudeLoading ? "Claude réfléchit…" : "Envoyer à Claude"}
+              </button>
+            </form>
+          </div>
+
+          <div className="bg-background p-6">
+            {claudeResult === null && !claudeLoading && (
+              <div className="flex h-full min-h-[140px] flex-col items-center justify-center text-center">
+                <p className="text-xs text-muted-foreground">Aucune réponse pour l'instant.</p>
+                <p className="font-mono text-[10px] text-muted-foreground/70">POSEZ UNE QUESTION POUR OBTENIR UNE RÉPONSE</p>
+              </div>
+            )}
+
+            {claudeLoading && (
+              <div className="flex h-full min-h-[140px] flex-col items-center justify-center gap-3">
+                <span className="relative flex h-6 w-6">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-40" />
+                  <span className="relative inline-flex h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                </span>
+                <p className="font-mono text-[10px] text-muted-foreground">INTERROGATION EN COURS…</p>
+              </div>
+            )}
+
+            {claudeResult?.ok === true && (
+              <div className="rounded-md border border-border bg-card p-4">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{claudeResult.model}</p>
+                <div className="mt-3 max-h-[320px] overflow-y-auto pr-2">
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{claudeResult.text}</p>
+                </div>
+              </div>
+            )}
+
+            {claudeResult?.ok === false && (
+              <div className="rounded-md border border-error/30 bg-error-muted p-4">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-error-foreground">{claudeResult.code}</p>
+                <p className="mt-2 text-sm text-error-foreground">{claudeResult.error}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
       <footer className="fixed right-0 bottom-0 left-0 border-t border-border bg-card px-4 py-1.5">
         <div className="flex items-center justify-between">
