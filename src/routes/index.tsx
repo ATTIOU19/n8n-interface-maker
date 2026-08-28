@@ -49,6 +49,8 @@ function horodatage(d: Date) {
 }
 
 function Index() {
+  const ask = useServerFn(askClaude);
+
   const [webhookUrl, setWebhookUrl] = useState(DEFAULT_WEBHOOK_URL);
   const [editUrl, setEditUrl] = useState(false);
   const [connState, setConnState] = useState<"idle" | "testing" | "ok" | "ko">("idle");
@@ -63,6 +65,10 @@ function Index() {
   const [counter, setCounter] = useState(9480);
 
   const [logs, setLogs] = useState<LogEntry[]>([]);
+
+  const [questionClaude, setQuestionClaude] = useState("");
+  const [claudeLoading, setClaudeLoading] = useState(false);
+  const [claudeResult, setClaudeResult] = useState<ClaudeResult | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) ?? DEFAULT_WEBHOOK_URL;
