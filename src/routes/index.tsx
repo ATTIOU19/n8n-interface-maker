@@ -192,6 +192,24 @@ function Index() {
     }
   }
 
+  async function poserQuestionClaude(e: React.FormEvent) {
+    e.preventDefault();
+    if (!questionClaude.trim() || claudeLoading) return;
+    setClaudeLoading(true);
+    setClaudeResult(null);
+    try {
+      setClaudeResult(await ask({ data: { prompt: questionClaude.trim() } }));
+    } catch (err) {
+      setClaudeResult({
+        ok: false,
+        code: "CLIENT_ERROR",
+        error: err instanceof Error ? err.message : "Erreur inattendue.",
+      });
+    } finally {
+      setClaudeLoading(false);
+    }
+  }
+
   const inputCls =
     "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring";
   const labelCls =
